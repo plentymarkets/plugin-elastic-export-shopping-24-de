@@ -1,0 +1,13 @@
+{
+  "name": "ElasticExportShopping24DE",
+  "description": "This plugin adds the format Shopping24DE to the Elastic Export.",
+  "namespace": "ElasticExportShopping24DE",
+  "author": "plentymarkets",
+  "type": "export",
+  "serviceProvider": "ElasticExportShopping24DE\\ElasticExportShopping24DEServiceProvider",
+  "version": 0.1,
+  "require":
+  {
+    "ElasticExport": 0.1
+  }
+}
