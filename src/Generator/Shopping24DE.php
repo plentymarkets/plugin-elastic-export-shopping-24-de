@@ -3,7 +3,7 @@
 namespace ElasticExportShopping24DE\Generator;
 
 use ElasticExport\Helper\ElasticExportCoreHelper;
-use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
+use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
@@ -14,7 +14,7 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
-class Shopping24DE extends CSVGenerator
+class Shopping24DE extends CSVPluginGenerator
 {
     /**
      * @var ElasticExportCoreHelper $elasticExportHelper
@@ -66,7 +66,7 @@ class Shopping24DE extends CSVGenerator
      * @param array $formatSettings
      * @param array $filter
      */
-    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
+    protected function generatePluginContent($resultData, array $formatSettings = [], array $filter = [])
     {
         if(is_array($resultData['documents']) && count($resultData['documents']) > 0)
         {
