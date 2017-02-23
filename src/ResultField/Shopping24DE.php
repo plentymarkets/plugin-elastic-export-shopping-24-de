@@ -85,7 +85,10 @@ class Shopping24DE extends ResultFields
          * @var DefaultCategoryMutator $defaultCategoryMutator
          */
         $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
-        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
+        if($defaultCategoryMutator instanceof DefaultCategoryMutator)
+        {
+            $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
+        }
 
         $fields = [
             [
