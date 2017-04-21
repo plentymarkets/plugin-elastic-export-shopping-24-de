@@ -13,9 +13,12 @@ use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
+use Plenty\Plugin\Log\Loggable;
 
 class Shopping24DE extends CSVPluginGenerator
 {
+	use Loggable;
+
     /**
      * @var ElasticExportCoreHelper $elasticExportHelper
      */
@@ -74,7 +77,7 @@ class Shopping24DE extends CSVPluginGenerator
 
             $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-            $this->setDelimiter(" ");
+            $this->setDelimiter("	");
 
             $this->addCSVContent([
                 'art_name',
@@ -98,69 +101,79 @@ class Shopping24DE extends CSVPluginGenerator
                 'unit_price'
             ]);
 
-            //Create a List of all VariationIds
-            $variationIdList = array();
-            foreach($resultData['documents'] as $variation)
-            {
-                $variationIdList[] = $variation['id'];
-            }
+			try
+			{
+				//Create a List of all VariationIds
+				$variationIdList = array();
+				foreach($resultData['documents'] as $variation)
+				{
+					$variationIdList[] = $variation['id'];
+				}
 
-            //Get the missing fields in ES from IDL
-            if(is_array($variationIdList) && count($variationIdList) > 0)
-            {
-                /**
-                 * @var \ElasticExportShopping24DE\IDL_ResultList\Shopping24DE $idlResultList
-                 */
-                $idlResultList = pluginApp(\ElasticExportShopping24DE\IDL_ResultList\Shopping24DE::class);
-                $idlResultList = $idlResultList->getResultList($variationIdList, $settings);
-            }
+				//Get the missing fields in ES from IDL
+				if(is_array($variationIdList) && count($variationIdList) > 0)
+				{
+					/**
+					 * @var \ElasticExportShopping24DE\IDL_ResultList\Shopping24DE $idlResultList
+					 */
+					$idlResultList = pluginApp(\ElasticExportShopping24DE\IDL_ResultList\Shopping24DE::class);
+					$idlResultList = $idlResultList->getResultList($variationIdList, $settings);
+				}
 
-            //Creates an array with the variationId as key to surpass the sorting problem
-            if(isset($idlResultList) && $idlResultList instanceof RecordList)
-            {
-                $this->createIdlArray($idlResultList);
-            }
+				//Creates an array with the variationId as key to surpass the sorting problem
+				if(isset($idlResultList) && $idlResultList instanceof RecordList)
+				{
+					$this->createIdlArray($idlResultList);
+				}
 
-            $rows = [];
+				$rows = [];
 
-            foreach($resultData['documents'] as $item)
-            {
-                if(!array_key_exists($item['data']['item']['id'], $rows))
-                {
-                    $this->getItemPropertyList($item, $settings);
-                    $rows[$item['data']['item']['id']] = $this->getMain($item, $settings);
-                }
+				foreach($resultData['documents'] as $item)
+				{
+					if(!array_key_exists($item['data']['item']['id'], $rows))
+					{
+						$this->getItemPropertyList($item, $settings);
+						$rows[$item['data']['item']['id']] = $this->getMain($item, $settings);
+					}
 
-                if(array_key_exists($item['data']['item']['id'], $rows) && $item['data']['attributes']['attributeValueSetId'] > 0)
-                {
-                    $variationAttributes = $this->getVariationAttributes($item, $settings);
+					if(array_key_exists($item['data']['item']['id'], $rows) && $item['data']['attributes']['attributeValueSetId'] > 0)
+					{
+						$variationAttributes = $this->getVariationAttributes($item, $settings);
 
-                    if(array_key_exists('Color', $variationAttributes))
-                    {
-                        $rows[$item['data']['item']['id']]['color'] = array_unique(array_merge($rows[$item['data']['item']['id']]['color'], $variationAttributes['Color']));
-                    }
+						if(array_key_exists('Color', $variationAttributes))
+						{
+							$rows[$item['data']['item']['id']]['color'] = array_unique(array_merge($rows[$item['data']['item']['id']]['color'], $variationAttributes['Color']));
+						}
 
-                    if(array_key_exists('Size', $variationAttributes))
-                    {
-                        $rows[$item['data']['item']['id']]['clothing_size'] = array_unique(array_merge($rows[$item['data']['item']['id']]['clothing_size'], $variationAttributes['Size']));
-                    }
-                }
-            }
+						if(array_key_exists('Size', $variationAttributes))
+						{
+							$rows[$item['data']['item']['id']]['clothing_size'] = array_unique(array_merge($rows[$item['data']['item']['id']]['clothing_size'], $variationAttributes['Size']));
+						}
+					}
+				}
 
-            foreach($rows as $data)
-            {
-                if(array_key_exists('color', $data) && is_array($data['color']))
-                {
-                    $data['color'] = implode(', ', $data['color']);
-                }
+				foreach($rows as $data)
+				{
+					if(array_key_exists('color', $data) && is_array($data['color']))
+					{
+						$data['color'] = implode(', ', $data['color']);
+					}
 
-                if(array_key_exists('clothing_size', $data) && is_array($data['clothing_size']))
-                {
-                    $data['clothing_size'] = implode(', ', $data['clothing_size']);
-                }
+					if(array_key_exists('clothing_size', $data) && is_array($data['clothing_size']))
+					{
+						$data['clothing_size'] = implode(', ', $data['clothing_size']);
+					}
 
-                $this->addCSVContent(array_values($data));
-            }
+					$this->addCSVContent(array_values($data));
+				}
+			}
+			catch(\Throwable $exception)
+			{
+				$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::log.buildRowError', [
+					'Error message ' 	=> $exception->getMessage(),
+					'Error line'    	=> $exception->getLine(),
+				]);
+			}
         }
     }
 
