@@ -77,7 +77,7 @@ class Shopping24DE extends CSVPluginGenerator
 
             $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-            $this->setDelimiter("	");
+            $this->setDelimiter("	"); //tab sign
 
             $this->addCSVContent([
                 'art_name',
@@ -187,7 +187,19 @@ class Shopping24DE extends CSVPluginGenerator
     {
         $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($this->idlVariations[$item['id']]['variationRecommendedRetailPrice.price'], $settings);
         $retailPrice = $this->idlVariations[$item['id']]['variationRetailPrice.price'];
-        $rrp = $rrp > $retailPrice ? $rrp : '';
+
+        if($retailPrice <= 0)
+        {
+        	$retailPrice = '';
+        	$currency = '';
+		}
+		else
+		{
+			$retailPrice = number_format((float)$retailPrice, 2, ',', '');
+			$currency = $this->idlVariations[$item['id']]['variationRetailPrice.currency'];
+		}
+
+        $rrp = $rrp > $retailPrice ? number_format((float)$rrp, 2, ',','') : '';
         $deliveryCost = $this->elasticExportHelper->getShippingCost($item['data']['item']['id'], $settings);
 
         if(!is_null($deliveryCost))
@@ -204,9 +216,9 @@ class Shopping24DE extends CSVPluginGenerator
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
             'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
             'deep_link'         => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-            'price'             => number_format((float)$retailPrice, 2, ',', ''),
-            'old_price'         => number_format((float)$rrp, 2, ',',''),
-            'currency'          => $this->idlVariations[$item['id']]['variationRetailPrice.currency'],
+            'price'             => $retailPrice,
+            'old_price'         => $rrp,
+            'currency'          => $currency,
             'delivery_costs'    => $deliveryCost,
             'category'          => $this->elasticExportHelper->getCategory((int)$item['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
             'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName((int)$item['data']['item']['manufacturer']['id'])),
