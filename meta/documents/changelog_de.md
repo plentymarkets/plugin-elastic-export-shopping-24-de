@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.5 (2017-04-21)
+
+### Behoben
+- Das Trennzeichen wurde von einem Leerzeichen zu einem Tab geändert.
+
 ## v1.0.4 (2017-03-22)
 
 ### Behoben
@@ -20,7 +25,6 @@
 
 # Changed
 - Screenshot aktualisiert.
-
 
 ## v1.0.0 (2017-02-20)
 

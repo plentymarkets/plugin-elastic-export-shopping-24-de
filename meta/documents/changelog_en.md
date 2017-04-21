@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.5 (2017-04-21)
+
+### Fixed
+- We changed the delimiter from space to tab.
+
 ## v1.0.4 (2017-03-22)
 
 ### Fixed
