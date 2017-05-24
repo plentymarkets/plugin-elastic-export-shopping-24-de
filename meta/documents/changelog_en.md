@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.6 (2017-05-24)
+
+### Changed
+- The plugin Elastic Export is now required to use the plugin format Shopping24DE.
+
 ## v1.0.5 (2017-04-21)
 
 ### Fixed
