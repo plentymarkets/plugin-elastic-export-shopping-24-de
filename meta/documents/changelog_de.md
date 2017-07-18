@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.7 (2017-07-18)  
+
+### Geändert 
+- Das Plugin Elastic Export ist nun Voraussetzung zur Nutzung des Plugin-Formats.
+
 ## v1.0.6 (2017-05-24)
 
 ### Geändert
