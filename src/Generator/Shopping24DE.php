@@ -211,7 +211,7 @@ class Shopping24DE extends CSVPluginGenerator
             $deliveryCost = '';
         }
 
-		$image = $image = $this->elasticExportHelper->getImageListInOrder($item, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
+		$image = $this->elasticExportHelper->getImageListInOrder($item, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
 
 		if(count($image) > 0)
 		{
