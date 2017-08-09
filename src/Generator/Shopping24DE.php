@@ -211,10 +211,21 @@ class Shopping24DE extends CSVPluginGenerator
             $deliveryCost = '';
         }
 
+		$image = $image = $this->elasticExportHelper->getImageListInOrder($item, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
+
+		if(count($image) > 0)
+		{
+			$image = $image[0];
+		}
+		else
+		{
+			$image = '';
+		}
+
         $data = [
             'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings, 80))),
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
-            'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
+            'image_url'         => $image,
             'deep_link'         => $this->elasticExportHelper->getUrl($item, $settings, true, false),
             'price'             => $retailPrice,
             'old_price'         => $rrp,

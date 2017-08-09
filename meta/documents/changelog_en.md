@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.8 (2017-08-09)
+
+### Fixed
+ - An issue was fixed which caused the images not to be ordered by the position.
+
 ## v1.0.7 (2017-07-18)
 
 ### Changed
