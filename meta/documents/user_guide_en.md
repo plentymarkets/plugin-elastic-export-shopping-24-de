@@ -144,7 +144,7 @@ The following table lists details for settings, format settings and recommended 
 			image_url
 		</td>
 		<td>
-			<b>Content:</b> The image url. Variation images are prioritizied over item images.
+			<b>Content:</b> The image URL. Variation images are prioritizied over item images.
 		</td>        
 	</tr>
     <tr>
@@ -208,7 +208,7 @@ The following table lists details for settings, format settings and recommended 
             gender_age
         </td>
         <td>
-            <b>Content:</b> The <b>Interessengruppe</b> of the item.
+            <b>Content:</b> The <b>potential group of buyers</b> of the item.
         </td>        
     </tr>
     <tr>
@@ -256,7 +256,7 @@ The following table lists details for settings, format settings and recommended 
 			cut
 		</td>
 		<td>
-			<b>Content:</b> Empty.
+			<b>Content:</b> Empty
 		</td>        
 	</tr>
 	<tr>
@@ -264,7 +264,7 @@ The following table lists details for settings, format settings and recommended 
 			link
 		</td>
 		<td>
-			<b>Content:</b> Empty.
+			<b>Content:</b> Empty
 		</td>        
 	</tr>
 	<tr>
