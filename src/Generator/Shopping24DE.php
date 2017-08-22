@@ -188,7 +188,7 @@ class Shopping24DE extends CSVPluginGenerator
 			}
 		}
 
-		if(array_key_exists($variation['data']['item']['id'],  $this->rows) && $variation['data']['attributes']['attributeValueSetId'] > 0)
+		if(array_key_exists($variation['data']['item']['id'],  $this->rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
 		{
 			$this->addAttribute($variation, $settings);
 		}

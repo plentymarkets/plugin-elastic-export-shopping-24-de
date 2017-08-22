@@ -145,7 +145,9 @@ class Shopping24DE extends ResultFields
                 'barcodes.type',
 
                 //attributes
-                'attributes.attributeValueSetId',
+				'attributes.attributeValueSetId',
+				'attributes.attributeId',
+				'attributes.valueId',
 
 				//properties
 				'properties.property.id',
