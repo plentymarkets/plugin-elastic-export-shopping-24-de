@@ -257,7 +257,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den Einstellungen, Formateinstel
 			cut
 		</td>
 		<td>
-			<b>Inhalt:</b> Leer.
+			<b>Inhalt:</b> Leer
 		</td>        
 	</tr>
 	<tr>
@@ -265,7 +265,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den Einstellungen, Formateinstel
 			link
 		</td>
 		<td>
-			<b>Inhalt:</b> Leer.
+			<b>Inhalt:</b> Leer
 		</td>        
 	</tr>
 	<tr>
