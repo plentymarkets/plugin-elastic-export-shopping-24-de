@@ -5,8 +5,10 @@ namespace ElasticExportShopping24DE\ResultField;
 use Plenty\Modules\DataExchange\Contracts\ResultFields;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
+use Plenty\Modules\Item\Search\Mutators\BarcodeMutator;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
+use Plenty\Modules\Item\Search\Mutators\KeyMutator;
 use Plenty\Modules\Item\Search\Mutators\SkuMutator;
 use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 
@@ -35,21 +37,7 @@ class Shopping24DE extends ResultFields
         $itemDescriptionFields = ['texts.urlPath'];
         $itemDescriptionFields[] = 'texts.keywords';
 
-        switch($settings->get('nameId'))
-        {
-            case 1:
-                $itemDescriptionFields[] = 'texts.name1';
-                break;
-            case 2:
-                $itemDescriptionFields[] = 'texts.name2';
-                break;
-            case 3:
-                $itemDescriptionFields[] = 'texts.name3';
-                break;
-            default:
-                $itemDescriptionFields[] = 'texts.name1';
-                break;
-        }
+		$itemDescriptionFields[] = 'texts.name' . $settings->get('nameId');
 
         if($settings->get('descriptionType') == 'itemShortDescription'
             || $settings->get('previewTextType') == 'itemShortDescription')
@@ -65,22 +53,41 @@ class Shopping24DE extends ResultFields
             $itemDescriptionFields[] = 'texts.description';
         }
         $itemDescriptionFields[] = 'texts.technicalData';
+        $itemDescriptionFields[] = 'texts.lang';
 
         //Mutator
-        /**
+
+		/**
+		 * @var BarcodeMutator $barcodeMutator
+		 */
+		$barcodeMutator = pluginApp(BarcodeMutator::class);
+		if($barcodeMutator instanceof BarcodeMutator)
+		{
+			$barcodeMutator->addMarket($reference);
+		}
+
+		/**
+		 * @var KeyMutator
+		 */
+		$keyMutator = pluginApp(KeyMutator::class);
+
+		if($keyMutator instanceof KeyMutator)
+		{
+			$keyMutator->setKeyList($this->getKeyList());
+			$keyMutator->setNestedKeyList($this->getNestedKeyList());
+		}
+
+		/**
          * @var ImageMutator $imageMutator
          */
         $imageMutator = pluginApp(ImageMutator::class);
         $imageMutator->addMarket($reference);
+
         /**
          * @var LanguageMutator $languageMutator
          */
         $languageMutator = pluginApp(LanguageMutator::class, [[$settings->get('lang')]]);
-        /**
-         * @var SkuMutator $skuMutator
-         */
-        $skuMutator = pluginApp(SkuMutator::class);
-        $skuMutator->setMarket($reference);
+
         /**
          * @var DefaultCategoryMutator $defaultCategoryMutator
          */
@@ -101,9 +108,17 @@ class Shopping24DE extends ResultFields
                 'variation.availability.id',
                 'variation.stockLimitation',
                 'variation.vatId',
-                'variation.model',
+                'variation.number',
+
 
                 //images
+				'images.all.urlMiddle',
+				'images.all.urlPreview',
+				'images.all.urlSecondPreview',
+				'images.all.url',
+				'images.all.path',
+				'images.all.position',
+
                 'images.item.urlMiddle',
                 'images.item.urlPreview',
                 'images.item.urlSecondPreview',
@@ -131,12 +146,23 @@ class Shopping24DE extends ResultFields
 
                 //attributes
                 'attributes.attributeValueSetId',
+
+				//properties
+				'properties.property.id',
+				'properties.property.valueType',
+				'properties.selection.name',
+				'properties.selection.lang',
+				'properties.texts.value',
+				'properties.texts.lang',
+				'properties.valueInt',
+				'properties.valueFloat',
             ],
 
             [
                 $languageMutator,
-                $skuMutator,
-                $defaultCategoryMutator
+                $defaultCategoryMutator,
+				$barcodeMutator,
+				$keyMutator
             ],
         ];
 
@@ -152,4 +178,125 @@ class Shopping24DE extends ResultFields
 
         return $fields;
     }
+
+	/**
+	 * @return array
+	 */
+	private function getKeyList()
+	{
+		return [
+			// Item
+			'item.id',
+			'item.manufacturer.id',
+
+			// Variation
+			'variation.availability.id',
+			'variation.number',
+			'variation.vatId',
+			'variation.stockLimitation',
+
+			// Unit
+			'unit.content',
+			'unit.id',
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getNestedKeyList()
+	{
+		return [
+			'keys' => [
+				//attributes
+				'attributes',
+
+				//barcodes
+				'barcodes',
+
+				//default categories
+				'defaultCategories',
+
+				//images
+				'images.all',
+				'images.item',
+				'images.variation',
+
+				//texts
+				'texts',
+
+				//properties
+				'properties',
+			],
+
+			'nestedKeys' => [
+				// Attributes
+				'attributes' => [
+					'attributeValueSetId',
+					'attributeId',
+					'valueId'
+				],
+
+				// Barcodes
+				'barcodes' => [
+					'code',
+					'type'
+				],
+
+				// Default categories
+				'defaultCategories' => [
+					'id'
+				],
+
+				// Images
+				'images.all' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+				'images.item' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+				'images.variation' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+
+				// texts
+				'texts' => [
+					'urlPath',
+					'name1',
+					'name2',
+					'name3',
+					'shortDescription',
+					'description',
+					'technicalData',
+				],
+
+				//proprieties
+				'properties'    => [
+					'property.id',
+					'property.valueType',
+					'selection.name',
+					'selection.lang',
+					'texts.value',
+					'texts.lang',
+					'valueInt',
+					'valueFloat',
+				],
+			]
+		];
+	}
 }

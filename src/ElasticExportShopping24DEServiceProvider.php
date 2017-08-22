@@ -19,7 +19,8 @@ class ElasticExportShopping24DEServiceProvider extends DataExchangeServiceProvid
             'ElasticExportShopping24DE\ResultField\Shopping24DE',
             'ElasticExportShopping24DE\Generator\Shopping24DE',
             '',
-            true
+            true,
+			true
         );
     }
 }
