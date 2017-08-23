@@ -1,5 +1,11 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.9 (2017-08-21)
+
+### Changed
+- The format plugin is now based on Elastic Search only.
+- The performance has been improved.
+
 ## v1.0.8 (2017-08-09)
 
 ### Fixed

@@ -3,26 +3,44 @@
 namespace ElasticExportShopping24DE\Generator;
 
 use ElasticExport\Helper\ElasticExportCoreHelper;
+use ElasticExport\Helper\ElasticExportPriceHelper;
+use ElasticExport\Helper\ElasticExportPropertyHelper;
+use ElasticExport\Helper\ElasticExportStockHelper;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
-use Plenty\Modules\Item\DataLayer\Models\Record;
-use Plenty\Modules\Item\DataLayer\Models\RecordList;
-use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
-use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
-use Plenty\Modules\Item\Property\Models\PropertySelection;
+use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchScrollRepositoryContract;
 use Plenty\Plugin\Log\Loggable;
 
 class Shopping24DE extends CSVPluginGenerator
 {
 	use Loggable;
 
+	const DELIMITER = "	";
+
+	const GENDER_AGE = 'gender_age';
+
     /**
      * @var ElasticExportCoreHelper $elasticExportHelper
      */
     private $elasticExportHelper;
+
+	/**
+	 * @var ElasticExportStockHelper $elasticExportStockHelper
+	 */
+    private $elasticExportStockHelper;
+
+	/**
+	 * @var ElasticExportPriceHelper $elasticExportPriceHelper
+	 */
+    private $elasticExportPriceHelper;
+
+	/**
+	 * @var ElasticExportPropertyHelper $elasticExportPropertyHelper
+	 */
+    private $elasticExportPropertyHelper;
 
     /**
      * @var ArrayHelper $arrayHelper
@@ -35,172 +53,193 @@ class Shopping24DE extends CSVPluginGenerator
     private $attributeValueNameRepository;
 
     /**
-     * PropertySelectionRepositoryContract $propertySelectionRepository
-     */
-    private $propertySelectionRepository;
-
-    /**
      * @var array
      */
-    private $itemPropertyCache = [];
+    private $rows = [];
 
-    /**
-     * @var array
-     */
-    private $idlVariations = array();
+	/**
+	 * @var int
+	 */
+    private $lines = 0;
 
     /**
      * Shopping24DE constructor.
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
-     * @param PropertySelectionRepositoryContract $propertySelectionRepository
      */
     public function __construct(ArrayHelper $arrayHelper,
-                                AttributeValueNameRepositoryContract $attributeValueNameRepository,
-                                PropertySelectionRepositoryContract $propertySelectionRepository)
+                                AttributeValueNameRepositoryContract $attributeValueNameRepository)
     {
         $this->arrayHelper                  = $arrayHelper;
         $this->attributeValueNameRepository = $attributeValueNameRepository;
-        $this->propertySelectionRepository = $propertySelectionRepository;
     }
 
     /**
-     * @param array $resultData
+     * @param VariationElasticSearchScrollRepositoryContract $elasticSearch
      * @param array $formatSettings
      * @param array $filter
      */
-    protected function generatePluginContent($resultData, array $formatSettings = [], array $filter = [])
+    protected function generatePluginContent($elasticSearch, array $formatSettings = [], array $filter = [])
     {
-        if(is_array($resultData['documents']) && count($resultData['documents']) > 0)
-        {
-            $this->elasticExportHelper = pluginApp(ElasticExportCoreHelper::class);
+		$this->elasticExportHelper = pluginApp(ElasticExportCoreHelper::class);
+		$this->elasticExportStockHelper = pluginApp(ElasticExportStockHelper::class);
+		$this->elasticExportPriceHelper = pluginApp(ElasticExportPriceHelper::class);
+		$this->elasticExportPropertyHelper = pluginApp(ElasticExportPropertyHelper::class);
 
-            $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-            $this->setDelimiter("	"); //tab sign
+		$this->setDelimiter(self::DELIMITER); //tab sign
 
-            $this->addCSVContent([
-                'art_name',
-                'long_description',
-                'image_url',
-                'deep_link',
-                'price',
-                'old_price',
-                'currency',
-                'delivery_costs',
-                'category',
-                'brand',
-                'gender_age',
-                'ean',
-                'keywords',
-                'art_number',
-                'color',
-                'clothing_size',
-                'cut',
-                'link',
-                'unit_price'
-            ]);
+		$this->setHeader();
 
-			try
+		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
+		{
+			$limitReached = false;
+			do
 			{
-				//Create a List of all VariationIds
-				$variationIdList = array();
-				foreach($resultData['documents'] as $variation)
+				if($limitReached === true)
 				{
-					$variationIdList[] = $variation['id'];
+					break;
 				}
 
-				//Get the missing fields in ES from IDL
-				if(is_array($variationIdList) && count($variationIdList) > 0)
+				$resultList = $elasticSearch->execute();
+
+				if(!is_null($resultList['error']))
 				{
-					/**
-					 * @var \ElasticExportShopping24DE\IDL_ResultList\Shopping24DE $idlResultList
-					 */
-					$idlResultList = pluginApp(\ElasticExportShopping24DE\IDL_ResultList\Shopping24DE::class);
-					$idlResultList = $idlResultList->getResultList($variationIdList, $settings);
+					$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::logs.esError', [
+						'Error message ' => $resultList['error'],
+					]);
 				}
-
-				//Creates an array with the variationId as key to surpass the sorting problem
-				if(isset($idlResultList) && $idlResultList instanceof RecordList)
+				if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
 				{
-					$this->createIdlArray($idlResultList);
-				}
-
-				$rows = [];
-
-				foreach($resultData['documents'] as $item)
-				{
-					if(!array_key_exists($item['data']['item']['id'], $rows))
+					foreach($resultList['documents'] as $variation)
 					{
-						$this->getItemPropertyList($item, $settings);
-						$rows[$item['data']['item']['id']] = $this->getMain($item, $settings);
-					}
-
-					if(array_key_exists($item['data']['item']['id'], $rows) && $item['data']['attributes']['attributeValueSetId'] > 0)
-					{
-						$variationAttributes = $this->getVariationAttributes($item, $settings);
-
-						if(array_key_exists('Color', $variationAttributes))
+						if($this->lines == $filter['limit'])
 						{
-							$rows[$item['data']['item']['id']]['color'] = array_unique(array_merge($rows[$item['data']['item']['id']]['color'], $variationAttributes['Color']));
+							$limitReached = true;
+							break;
 						}
 
-						if(array_key_exists('Size', $variationAttributes))
+						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
 						{
-							$rows[$item['data']['item']['id']]['clothing_size'] = array_unique(array_merge($rows[$item['data']['item']['id']]['clothing_size'], $variationAttributes['Size']));
+							continue;
+						}
+
+						try
+						{
+							$this->buildRow($variation, $settings);
+						}
+						catch(\Throwable $throwable)
+						{
+							$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::logs.buildRowError', [
+								'Error message ' => $throwable->getMessage(),
+								'Error line'    => $throwable->getLine(),
+								'VariationId'   => $variation['id']
+							]);
 						}
 					}
 				}
-
-				foreach($rows as $data)
-				{
-					if(array_key_exists('color', $data) && is_array($data['color']))
-					{
-						$data['color'] = implode(', ', $data['color']);
-					}
-
-					if(array_key_exists('clothing_size', $data) && is_array($data['clothing_size']))
-					{
-						$data['clothing_size'] = implode(', ', $data['clothing_size']);
-					}
-
-					$this->addCSVContent(array_values($data));
-				}
-			}
-			catch(\Throwable $exception)
-			{
-				$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::log.buildRowError', [
-					'Error message ' 	=> $exception->getMessage(),
-					'Error line'    	=> $exception->getLine(),
-				]);
-			}
-        }
+			}while ($elasticSearch->hasNext());
+		}
     }
+
+	/**
+	 * Set the csv header
+	 */
+    private function setHeader()
+	{
+		$this->addCSVContent([
+			'art_name',
+			'long_description',
+			'image_url',
+			'deep_link',
+			'price',
+			'old_price',
+			'currency',
+			'delivery_costs',
+			'category',
+			'brand',
+			'gender_age',
+			'ean',
+			'keywords',
+			'art_number',
+			'color',
+			'clothing_size',
+			'cut',
+			'link',
+			'unit_price'
+		]);
+	}
+
+	/**
+	 * Builds the Rows for the csv.
+	 *
+	 * @param $variation
+	 * @param $settings
+	 */
+	private function buildRow($variation, $settings)
+	{
+		if(!array_key_exists($variation['data']['item']['id'], $this->rows))
+		{
+			$this->fillLines();
+			$this->rows = array();
+			$this->rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
+
+			if($variation['data']['attributes']['attributeValueSetId'] > 0)
+			{
+				$this->addAttribute($variation, $settings);
+			}
+		}
+
+		if(array_key_exists($variation['data']['item']['id'],  $this->rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
+		{
+			$this->addAttribute($variation, $settings);
+		}
+	}
+
+	/**
+	 * Adds the csv lines.
+	 */
+	private function fillLines()
+	{
+		foreach($this->rows as $data)
+		{
+			if(array_key_exists('color', $data) && is_array($data['color']))
+			{
+				$data['color'] = implode(', ', $data['color']);
+			}
+
+			if(array_key_exists('clothing_size', $data) && is_array($data['clothing_size']))
+			{
+				$data['clothing_size'] = implode(', ', $data['clothing_size']);
+			}
+
+			$this->addCSVContent(array_values($data));
+			$this->lines = $this->lines +1;
+		}
+	}
 
     /**
      * Get main information.
-     * @param  array   $item
+     * @param  array   $variation
      * @param  KeyValue $settings
      * @return array
      */
-    private function getMain($item, KeyValue $settings):array
+    private function getMain($variation, KeyValue $settings):array
     {
-        $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($this->idlVariations[$item['id']]['variationRecommendedRetailPrice.price'], $settings);
-        $retailPrice = $this->idlVariations[$item['id']]['variationRetailPrice.price'];
+		$priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
 
-        if($retailPrice <= 0)
-        {
-        	$retailPrice = '';
-        	$currency = '';
-		}
-		else
+		$price = $priceList['price'];
+
+		$rrp = '';
+		$currency = '';
+
+		if((float)$price > 0)
 		{
-			$retailPrice = number_format((float)$retailPrice, 2, ',', '');
-			$currency = $this->idlVariations[$item['id']]['variationRetailPrice.currency'];
+			$rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
+			$currency = $priceList['currency'];
 		}
-
-        $rrp = $rrp > $retailPrice ? number_format((float)$rrp, 2, ',','') : '';
-        $deliveryCost = $this->elasticExportHelper->getShippingCost($item['data']['item']['id'], $settings);
+        $deliveryCost = $this->elasticExportHelper->getShippingCost($variation['data']['item']['id'], $settings);
 
         if(!is_null($deliveryCost))
         {
@@ -211,7 +250,7 @@ class Shopping24DE extends CSVPluginGenerator
             $deliveryCost = '';
         }
 
-		$image = $this->elasticExportHelper->getImageListInOrder($item, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
+		$image = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
 
 		if(count($image) > 0)
 		{
@@ -223,121 +262,74 @@ class Shopping24DE extends CSVPluginGenerator
 		}
 
         $data = [
-            'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings, 80))),
-            'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
+            'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getMutatedName($variation, $settings, 80))),
+            'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getMutatedDescription($variation, $settings)))),
             'image_url'         => $image,
-            'deep_link'         => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-            'price'             => $retailPrice,
+            'deep_link'         => $this->elasticExportHelper->getMutatedUrl($variation, $settings, true, false),
+            'price'             => $price,
             'old_price'         => $rrp,
             'currency'          => $currency,
             'delivery_costs'    => $deliveryCost,
-            'category'          => $this->elasticExportHelper->getCategory((int)$item['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
-            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName((int)$item['data']['item']['manufacturer']['id'])),
-            'gender_age'        => $this->itemPropertyCache[$item['data']['item']['id']]['gender_age'],
-            'ean'               => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-            'keywords'          => html_entity_decode($item['data']['texts'][0]['keywords']),
-            'art_number'        => html_entity_decode($this->idlVariations[$item['id']]['variationBase.customNumber']),
+            'category'          => $this->elasticExportHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
+            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id'])),
+            'gender_age'        => $this->elasticExportPropertyHelper->getProperty($variation, (string)'gender_age', (float)$settings->get('referrerId')),
+            'ean'               => $this->elasticExportHelper->getBarcodeByType($variation, $settings->get('barcode')),
+            'keywords'          => html_entity_decode($variation['data']['texts']['keywords']),
+            'art_number'        => html_entity_decode($variation['data']['variation']['number']),
             'color'             => [],
             'clothing_size'     => [],
             'cut'               => '',
             'link'              => '',
-            'unit_price'        => $this->elasticExportHelper->getBasePrice($item, $this->idlVariations),
+            'unit_price'        => $this->elasticExportPriceHelper->getBasePrice($variation, (float)$price, $settings->get('lang'), '/', false, false, $currency),
         ];
 
         return $data;
     }
 
+	/**
+	 * Adds the attributes to the row data.
+	 *
+	 * @param $variation
+	 * @param $settings
+	 */
+    private function addAttribute($variation, $settings)
+	{
+		$variationAttributes = $this->getVariationAttributes($variation, $settings);
+
+		if(array_key_exists('Color', $variationAttributes))
+		{
+			$this->rows[$variation['data']['item']['id']]['color'] = array_unique(array_merge( $this->rows[$variation['data']['item']['id']]['color'], $variationAttributes['Color']));
+		}
+
+		if(array_key_exists('Size', $variationAttributes))
+		{
+			$this->rows[$variation['data']['item']['id']]['clothing_size'] = array_unique(array_merge( $this->rows[$variation['data']['item']['id']]['clothing_size'], $variationAttributes['Size']));
+		}
+	}
+
     /**
      * Get variation attributes.
-     * @param  Record   $item
+     * @param  array   $variation
      * @param  KeyValue $settings
      * @return array<string,string>
      */
-    private function getVariationAttributes(Record $item, KeyValue $settings):array
+    private function getVariationAttributes($variation, KeyValue $settings):array
     {
-        $variationAttributes = [];
+		$variationAttributes = [];
 
-        foreach($item->variationAttributeValueList as $variationAttribute)
-        {
-            $attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
+		foreach($variation['data']['attributes'] as $variationAttribute)
+		{
+			$attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute['valueId'], $settings->get('lang'));
 
-            if($attributeValueName instanceof AttributeValueName)
-            {
-                if($attributeValueName->attributeValue->attribute->amazonAttribute)
-                {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
-                }
-            }
-        }
+			if($attributeValueName instanceof AttributeValueName)
+			{
+				if($attributeValueName->attributeValue->attribute->amazonAttribute)
+				{
+					$variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
+				}
+			}
+		}
 
-        return $variationAttributes;
-    }
-
-    /**
-     * Get item properties.
-     * @param 	array $item
-     * @param   KeyValue $settings
-     * @return array<string,string>
-     */
-    protected function getItemPropertyList($item, $settings):array
-    {
-        if(!array_key_exists($item['data']['item']['id'], $this->itemPropertyCache))
-        {
-            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings->get('referrerId'));
-
-            $list = [];
-
-            if(count($characterMarketComponentList))
-            {
-                foreach($characterMarketComponentList as $data)
-                {
-                    if((string) $data['characterValueType'] != 'file' && (string) $data['characterValueType'] != 'empty' && (string) $data['externalComponent'] != "0")
-                    {
-                        if((string) $data['characterValueType'] == 'selection')
-                        {
-                            $propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
-                            if($propertySelection instanceof PropertySelection)
-                            {
-                                $list[(string) $data['externalComponent']] = (string) $propertySelection->name;
-                            }
-                        }
-                        else
-                        {
-                            $list[(string) $data['externalComponent']] = (string) $data['characterValue'];
-                        }
-
-                    }
-                }
-            }
-
-            $this->itemPropertyCache[$item['data']['item']['id']] = $list;
-        }
-
-        return $this->itemPropertyCache[$item['data']['item']['id']];
-    }
-
-    /**
-     * @param RecordList $idlResultList
-     */
-    private function createIdlArray($idlResultList)
-    {
-        if($idlResultList instanceof RecordList)
-        {
-            foreach($idlResultList as $idlVariation)
-            {
-                if($idlVariation instanceof Record)
-                {
-                    $this->idlVariations[$idlVariation->variationBase->id] = [
-                        'itemBase.id' => $idlVariation->itemBase->id,
-                        'variationBase.id' => $idlVariation->variationBase->id,
-                        'variationBase.customNumber' => $idlVariation->variationBase->customNumber,
-                        'itemPropertyList' => $idlVariation->itemPropertyList,
-                        'variationRetailPrice.price' => $idlVariation->variationRetailPrice->price,
-                        'variationRetailPrice.currency'  => $idlVariation->variationRetailPrice->currency,
-                        'variationRecommendedRetailPrice.price' => $idlVariation->variationRecommendedRetailPrice->price,
-                    ];
-                }
-            }
-        }
+		return $variationAttributes;
     }
 }
