@@ -57,6 +57,11 @@ class Shopping24DE extends CSVPluginGenerator
      */
     private $rows = [];
 
+	/**
+	 * @var int
+	 */
+    private $lines = 0;
+
     /**
      * Shopping24DE constructor.
      * @param ArrayHelper $arrayHelper
@@ -90,7 +95,6 @@ class Shopping24DE extends CSVPluginGenerator
 		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
 		{
 			$limitReached = false;
-			$lines = 0;
 			do
 			{
 				if($limitReached === true)
@@ -110,7 +114,7 @@ class Shopping24DE extends CSVPluginGenerator
 				{
 					foreach($resultList['documents'] as $variation)
 					{
-						if($lines == $filter['limit'])
+						if($this->lines == $filter['limit'])
 						{
 							$limitReached = true;
 							break;
@@ -124,7 +128,6 @@ class Shopping24DE extends CSVPluginGenerator
 						try
 						{
 							$this->buildRow($variation, $settings);
-							$lines = $lines +1;
 						}
 						catch(\Throwable $throwable)
 						{
@@ -212,6 +215,7 @@ class Shopping24DE extends CSVPluginGenerator
 			}
 
 			$this->addCSVContent(array_values($data));
+			$this->lines = $this->lines +1;
 		}
 	}
 
