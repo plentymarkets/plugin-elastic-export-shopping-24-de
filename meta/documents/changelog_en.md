@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.10 (2017-11-16)
+
+### Fixed
+- An issue was fixed which caused the property values not to be exported.
+
 ## v1.0.9 (2017-08-21)
 
 ### Changed
@@ -9,12 +14,12 @@
 ## v1.0.8 (2017-08-09)
 
 ### Fixed
- - An issue was fixed which caused the images not to be ordered by the position.
+- An issue was fixed which caused the images not to be ordered by the position.
 
 ## v1.0.7 (2017-07-18)
 
 ### Changed
- - The plugin Elastic Export is now required to use the plugin format.
+- The plugin Elastic Export is now required to use the plugin format.
 
 ## v1.0.6 (2017-05-24)
 

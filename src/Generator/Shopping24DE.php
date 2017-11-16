@@ -14,9 +14,15 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchScrollRepositoryContract;
 use Plenty\Plugin\Log\Loggable;
 
+/**
+ * Class Shopping24DE
+ * @package ElasticExportShopping24DE\Generator
+ */
 class Shopping24DE extends CSVPluginGenerator
 {
 	use Loggable;
+
+    const SHOPPING_24 = 146.00;
 
 	const DELIMITER = "	";
 
@@ -64,11 +70,13 @@ class Shopping24DE extends CSVPluginGenerator
 
     /**
      * Shopping24DE constructor.
+     *
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
      */
-    public function __construct(ArrayHelper $arrayHelper,
-                                AttributeValueNameRepositoryContract $attributeValueNameRepository)
+    public function __construct(
+        ArrayHelper $arrayHelper,
+        AttributeValueNameRepositoryContract $attributeValueNameRepository)
     {
         $this->arrayHelper                  = $arrayHelper;
         $this->attributeValueNameRepository = $attributeValueNameRepository;
@@ -107,7 +115,7 @@ class Shopping24DE extends CSVPluginGenerator
 				if(!is_null($resultList['error']))
 				{
 					$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::logs.esError', [
-						'Error message ' => $resultList['error'],
+						'error message ' => $resultList['error'],
 					]);
 				}
 				if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
@@ -132,9 +140,9 @@ class Shopping24DE extends CSVPluginGenerator
 						catch(\Throwable $throwable)
 						{
 							$this->getLogger(__METHOD__)->error('ElasticExportShopping24DE::logs.buildRowError', [
-								'Error message ' => $throwable->getMessage(),
-								'Error line'    => $throwable->getLine(),
-								'VariationId'   => $variation['id']
+								'error message ' => $throwable->getMessage(),
+								'error line'     => $throwable->getLine(),
+								'VariationId'    => (string)$variation['id']
 							]);
 						}
 					}
@@ -206,12 +214,12 @@ class Shopping24DE extends CSVPluginGenerator
 		{
 			if(array_key_exists('color', $data) && is_array($data['color']))
 			{
-				$data['color'] = implode(', ', $data['color']);
+				$data['color'] = implode(', ', array_unique($data['color']));
 			}
 
 			if(array_key_exists('clothing_size', $data) && is_array($data['clothing_size']))
 			{
-				$data['clothing_size'] = implode(', ', $data['clothing_size']);
+				$data['clothing_size'] = implode(', ', array_unique($data['clothing_size']));
 			}
 
 			$this->addCSVContent(array_values($data));
@@ -221,58 +229,31 @@ class Shopping24DE extends CSVPluginGenerator
 
     /**
      * Get main information.
+     *
      * @param  array   $variation
      * @param  KeyValue $settings
      * @return array
      */
     private function getMain($variation, KeyValue $settings):array
     {
-		$priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
+		$priceList = $this->getPriceList($variation, $settings);
 
-		$price = $priceList['price'];
+        $deliveryCost = $this->getDeliveryCost($variation, $settings);
 
-		$rrp = '';
-		$currency = '';
-
-		if((float)$price > 0)
-		{
-			$rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
-			$currency = $priceList['currency'];
-		}
-        $deliveryCost = $this->elasticExportHelper->getShippingCost($variation['data']['item']['id'], $settings);
-
-        if(!is_null($deliveryCost))
-        {
-            $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
-        }
-        else
-        {
-            $deliveryCost = '';
-        }
-
-		$image = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
-
-		if(count($image) > 0)
-		{
-			$image = $image[0];
-		}
-		else
-		{
-			$image = '';
-		}
+		$image = $this->getFirstImage($variation, $settings);
 
         $data = [
             'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getMutatedName($variation, $settings, 80))),
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getMutatedDescription($variation, $settings)))),
             'image_url'         => $image,
             'deep_link'         => $this->elasticExportHelper->getMutatedUrl($variation, $settings, true, false),
-            'price'             => $price,
-            'old_price'         => $rrp,
-            'currency'          => $currency,
+            'price'             => $priceList['price'],
+            'old_price'         => $priceList['rrp'],
+            'currency'          => $priceList['currency'],
             'delivery_costs'    => $deliveryCost,
             'category'          => $this->elasticExportHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
             'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id'])),
-            'gender_age'        => $this->elasticExportPropertyHelper->getProperty($variation, (string)'gender_age', (float)$settings->get('referrerId')),
+            'gender_age'        => $this->elasticExportPropertyHelper->getProperty($variation, (string)'gender_age', self::SHOPPING_24),
             'ean'               => $this->elasticExportHelper->getBarcodeByType($variation, $settings->get('barcode')),
             'keywords'          => html_entity_decode($variation['data']['texts']['keywords']),
             'art_number'        => html_entity_decode($variation['data']['variation']['number']),
@@ -280,7 +261,7 @@ class Shopping24DE extends CSVPluginGenerator
             'clothing_size'     => [],
             'cut'               => '',
             'link'              => '',
-            'unit_price'        => $this->elasticExportPriceHelper->getBasePrice($variation, (float)$price, $settings->get('lang'), '/', false, false, $currency),
+            'unit_price'        => $this->elasticExportPriceHelper->getBasePrice($variation, (float)$priceList['price'], $settings->get('lang'), '/', false, false, $priceList['currency']),
         ];
 
         return $data;
@@ -298,22 +279,23 @@ class Shopping24DE extends CSVPluginGenerator
 
 		if(array_key_exists('Color', $variationAttributes))
 		{
-			$this->rows[$variation['data']['item']['id']]['color'] = array_unique(array_merge( $this->rows[$variation['data']['item']['id']]['color'], $variationAttributes['Color']));
+			$this->rows[$variation['data']['item']['id']]['color'] = array_merge($this->rows[$variation['data']['item']['id']]['color'], $variationAttributes['Color']);
 		}
 
 		if(array_key_exists('Size', $variationAttributes))
 		{
-			$this->rows[$variation['data']['item']['id']]['clothing_size'] = array_unique(array_merge( $this->rows[$variation['data']['item']['id']]['clothing_size'], $variationAttributes['Size']));
+			$this->rows[$variation['data']['item']['id']]['clothing_size'] = array_merge($this->rows[$variation['data']['item']['id']]['clothing_size'], $variationAttributes['Size']);
 		}
 	}
 
     /**
      * Get variation attributes.
+     *
      * @param  array   $variation
      * @param  KeyValue $settings
      * @return array<string,string>
      */
-    private function getVariationAttributes($variation, KeyValue $settings):array
+    private function getVariationAttributes(array $variation, KeyValue $settings):array
     {
 		$variationAttributes = [];
 
@@ -331,5 +313,71 @@ class Shopping24DE extends CSVPluginGenerator
 		}
 
 		return $variationAttributes;
+    }
+
+    /**
+     * Get price list formatted.
+     *
+     * @param $variation
+     * @param KeyValue $settings
+     * @return array
+     */
+    private function getPriceList(array $variation, KeyValue $settings):array
+    {
+        $priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
+
+        if((float)$priceList['price'] > 0)
+        {
+            return array(
+                'price'     => $priceList['price'],
+                'rrp'       => $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['recommendedRetailPrice'] : '',
+                'currency'  => $priceList['currency'],
+            );
+        }
+
+        return array(
+            'price'     => '',
+            'rrp'       => '',
+            'currency'  => '',
+        );
+    }
+
+    /**
+     * Get delivery cost.
+     *
+     * @param $variation
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getDeliveryCost(array $variation, KeyValue $settings):string
+    {
+        $deliveryCost = $this->elasticExportHelper->getShippingCost($variation['data']['item']['id'], $settings);
+
+        if(!is_null($deliveryCost))
+        {
+            return number_format((float)$deliveryCost, 2, ',', '');
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the first image depending on the ordering.
+     *
+     * @param array $variation
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getFirstImage(array $variation, KeyValue $settings):string
+    {
+        $image = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, ElasticExportCoreHelper::ITEM_IMAGES);
+
+        if(count($image) > 0)
+        {
+            // return first image
+            return $image[0];
+        }
+
+        return '';
     }
 }
