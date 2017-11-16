@@ -3,7 +3,7 @@
 ## v1.0.10 (2017-11-16)  
 
 ### Behoben 
-- Ein Fehler wurde behoben der dazu geführt hat, dass die Eigenschaftswerte nicht exportiert wurden.
+- Ein Fehler wurde behoben der dazu geführt hat, dass die Merkmalwerte nicht exportiert wurden.
 
 ## v1.0.9 (2017-08-21)
 
