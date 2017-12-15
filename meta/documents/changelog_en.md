@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.11 (2017-12-15)  
+
+### Changed 
+- The User Guide for the format Shopping24DE-Plugin was added.
+
 ## v1.0.10 (2017-11-16)
 
 ### Fixed
