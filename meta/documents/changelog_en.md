@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.12 (2018-02-16)
+
+### Changed
+- Updated plugin short description.
+
 ## v1.0.11 (2017-12-15)  
 
 ### Changed 
