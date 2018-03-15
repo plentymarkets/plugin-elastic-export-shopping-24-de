@@ -64,7 +64,7 @@ _Tab. 1: Einstellungen für das Datenformat **Shopping24DE-Plugin**_
 
 ## 3 Verfügbare Spalten der Exportdatei
 
-Öffnen Sie das Exportformat <b>Shopping24DE-Plugin</b> im Menü <b>Daten » Elastischer Export</b>, um die Exportdatei herunterzuladen und ggf. anzupassen. 
+Öffnen Sie das Exportformat **Shopping24DE-Plugin** im Menü **Daten » Elastischer Export**, um die Exportdatei herunterzuladen und ggf. anzupassen. 
 
 | **Spalte**       | **Erläuterung** | 
 | :---             | :--- |
