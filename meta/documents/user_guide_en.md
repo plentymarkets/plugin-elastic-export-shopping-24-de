@@ -9,17 +9,17 @@ shopping24.de is a subsidiary of the Otto Group and an online portal for price a
 
 ## 2 Setting up the data format Shopping24DE-Plugin in plentymarkets
 
-By installing this plugin yo will receive the export format <b>Shopping24DE-Plugin</b>. Use this format to exchange data between plentymarkets and Shopping24.de. It is required to install the Plugin Elastic export from the plentyMarketplace first before you can use the format <b>Shopping24DE-Plugin</b> in plentymarkets.
+By installing this plugin yo will receive the export format **Shopping24DE-Plugin**. Use this format to exchange data between plentymarkets and Shopping24.de. It is required to install the Plugin Elastic export from the plentyMarketplace first before you can use the format **Shopping24DE-Plugin** in plentymarkets.
 
-Once both plugins are installed, you can create the export format <b>Shopping24DE-Plugin</b>. Refer to the [Exporting data formats for price search engines](https://knowledge.plentymarkets.com/en/basics/data-exchange/exporting-data#30) page of the manual for further details about the individual format settings.
+Once both plugins are installed, you can create the export format **Shopping24DE-Plugin**. Refer to the [Exporting data formats for price search engines](https://knowledge.plentymarkets.com/en/basics/data-exchange/exporting-data#30) page of the manual for further details about the individual format settings.
 
 Creating a new export format:
 
-1. Go to <b>Data » Elastic export</b>.
-2. Click on <b>New export</b>.
+1. Go to **Data » Elastic export**.
+2. Click on **New export**.
 3. Carry out the settings as desired. Pay attention to the information given in table 1.
-4. <b>Save</b> the settings.
-→ The export format will be given an ID and it will appear in the overview within the <b>Exports</b> tab.
+4. **Save** the settings.
+→ The export format will be given an ID and it will appear in the overview within the **Exports** tab.
 
 
 The following table lists details for settings, format settings and recommended item filters for the format **Shopping24DE-Plugin**.
