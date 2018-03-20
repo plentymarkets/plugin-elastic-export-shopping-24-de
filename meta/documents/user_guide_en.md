@@ -9,7 +9,7 @@ shopping24.de is a subsidiary of the Otto Group and an online portal for price a
 
 ## 2 Setting up the data format Shopping24DE-Plugin in plentymarkets
 
-By installing this plugin yo will receive the export format **Shopping24DE-Plugin**. Use this format to exchange data between plentymarkets and Shopping24.de. It is required to install the Plugin Elastic export from the plentyMarketplace first before you can use the format **Shopping24DE-Plugin** in plentymarkets.
+By installing this plugin you will receive the export format **Shopping24DE-Plugin**. Use this format to exchange data between plentymarkets and Shopping24.de. It is required to install the Plugin Elastic export from the plentyMarketplace first before you can use the format **Shopping24DE-Plugin** in plentymarkets.
 
 Once both plugins are installed, you can create the export format **Shopping24DE-Plugin**. Refer to the [Exporting data formats for price search engines](https://knowledge.plentymarkets.com/en/basics/data-exchange/exporting-data#30) page of the manual for further details about the individual format settings.
 
