@@ -42,7 +42,7 @@ The following table lists details for settings, format settings and recommended 
 | **Client**                                            | Select a client. This setting is used for the URL structure. |
 | **URL parameter**                                     | Enter a suffix for the product URL if this is required for the export. If you have activated the transfer option for the product URL further up, then this character string will be added to the product URL. |
 | **Order referrer**                                    | Choose the order referrer that should be assigned during the order import from the drop-down list. |
-| **Market account**                                    | Select the market account from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
+| **Marketplace account**                               | Select the marketplace account from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
 | **Language**                                          | Select the language from the drop-down list. |
 | **Item name**                                         | Select **Name 1**, **Name 2** or **Name 3**. These names are saved in the **Texts** tab of the item. Enter a number into the **Maximum number of characters (def. Text)** field if desired. This specifies how many characters should be exported for the item name. |
 | **Preview text**                                      | This option does not affect this format. |
