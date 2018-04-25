@@ -1,5 +1,11 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.14 (2018-04-25)
+
+### Geändert
+- Die Filtrierung der Varianten wird durch die Klasse FiltrationService vorgenommen.
+- Vorschaubilder aktualisiert.
+
 ## v1.0.13 (2018-03-23)
 
 ### Hinzugefügt
