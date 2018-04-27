@@ -6,6 +6,7 @@ use ElasticExport\Helper\ElasticExportCoreHelper;
 use ElasticExport\Helper\ElasticExportPriceHelper;
 use ElasticExport\Helper\ElasticExportPropertyHelper;
 use ElasticExport\Helper\ElasticExportStockHelper;
+use ElasticExport\Services\FiltrationService;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -67,6 +68,11 @@ class Shopping24DE extends CSVPluginGenerator
 	 * @var int
 	 */
     private $lines = 0;
+    
+    /**
+     * @var FiltrationService
+     */
+    private $filtrationService;
 
     /**
      * Shopping24DE constructor.
@@ -95,9 +101,9 @@ class Shopping24DE extends CSVPluginGenerator
 		$this->elasticExportPropertyHelper = pluginApp(ElasticExportPropertyHelper::class);
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		$this->filtrationService = pluginApp(FiltrationService::class, [$settings, $filter]);
 
 		$this->setDelimiter(self::DELIMITER); //tab sign
-
 		$this->setHeader();
 
 		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
@@ -128,7 +134,7 @@ class Shopping24DE extends CSVPluginGenerator
 							break;
 						}
 
-						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
+						if($this->filtrationService->filter($variation))
 						{
 							continue;
 						}
