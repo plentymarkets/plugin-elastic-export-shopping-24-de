@@ -1,5 +1,16 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.15 (2018-04-30)
+
+### Changed
+- Laravel 5.5 update.
+
+## v1.0.14 (2018-04-25)
+
+### Changed
+- The class FiltrationService is responsible for the filtration of all variations.
+- Preview images updated.
+
 ## v1.0.13 (2018-03-23)
 
 ### Added
