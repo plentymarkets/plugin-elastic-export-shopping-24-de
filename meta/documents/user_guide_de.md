@@ -11,7 +11,7 @@ shopping24.de ist eine Tochtergesellschaft der Otto Gruppe und ein Online-Portal
 
 Mit der Installation dieses Plugins erhalten Sie das Exportformat **Shopping24DE-Plugin**, mit dem Sie Daten über den elastischen Export zu Shopping24.de übertragen. Um dieses Format für den elastischen Export nutzen zu können, installieren Sie zunächst das Plugin **Elastic Export** aus dem plentyMarketplace, wenn noch nicht geschehen. 
 
-Sobald beide Plugins in Ihrem System installiert sind, kann das Exportformat **Shopping24DE-Plugin** erstellt werden. Mehr Informationen finden Sie auch auf der Handbuchseite [Datenformate für Preissuchmaschinen exportieren](https://knowledge.plentymarkets.com/basics/datenaustausch/export-import/daten-exportieren#30).
+Sobald beide Plugins in Ihrem System installiert sind, kann das Exportformat **Shopping24DE-Plugin** erstellt werden. Weitere Informationen finden Sie auf der Handbuchseite [Elastischer Export](https://knowledge.plentymarkets.com/basics/datenaustausch/elastischer-export).
 
 Neues Exportformat erstellen:
 
