@@ -11,7 +11,7 @@ shopping24.de is a subsidiary of the Otto Group and an online portal for price a
 
 By installing this plugin you will receive the export format **Shopping24DE-Plugin**. Use this format to exchange data between plentymarkets and Shopping24.de. It is required to install the Plugin Elastic export from the plentyMarketplace first before you can use the format **Shopping24DE-Plugin** in plentymarkets.
 
-Once both plugins are installed, you can create the export format **Shopping24DE-Plugin**. Refer to the [Elastic Export](https://knowledge.plentymarkets.com/en/basics/data-exchange/elastic-export) page of the manual for further details about the individual format settings.
+Once both plugins are installed, you can create the export format **Shopping24DE-Plugin**. Refer to the [Elastic Export](https://knowledge.plentymarkets.com/en/data/exporting-data/elastic-export) page of the manual for further details about the individual format settings.
 
 Creating a new export format:
 
@@ -41,8 +41,8 @@ The following table lists details for settings, format settings and recommended 
 | **Product URL**                                       | Choose which URL should be transferred to the price comparison portal, the item’s URL or the variation’s URL. Variation SKUs can only be transferred in combination with the Ceres store. |
 | **Client**                                            | Select a client. This setting is used for the URL structure. |
 | **URL parameter**                                     | Enter a suffix for the product URL if this is required for the export. If you have activated the transfer option for the product URL further up, then this character string will be added to the product URL. |
-| **Order referrer**                                    | Choose the order referrer that should be assigned during the order import from the drop-down list. |
-| **Marketplace account**                               | Select the marketplace account from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
+| **Order referrer**                                    | Choose the order referrer that should be assigned during the order import from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
+| **Marketplace account**                               | Select the marketplace account from the drop-down list. |
 | **Language**                                          | Select the language from the drop-down list. |
 | **Item name**                                         | Select **Name 1**, **Name 2** or **Name 3**. These names are saved in the **Texts** tab of the item. Enter a number into the **Maximum number of characters (def. Text)** field if desired. This specifies how many characters should be exported for the item name. |
 | **Preview text**                                      | This option does not affect this format. |

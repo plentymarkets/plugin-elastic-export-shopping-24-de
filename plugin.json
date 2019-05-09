@@ -2,7 +2,7 @@
   "name": "ElasticExportShopping24DE",
   "description": "This plugin adds the format Shopping24DE to the Elastic Export.",
   "namespace": "ElasticExportShopping24DE",
-  "author": "plentymarkets GmbH",
+  "author": "plentysystems AG",
   "type": "export",
   "authorIcon": "icon_author_xs.png",
   "serviceProvider": "ElasticExportShopping24DE\\ElasticExportShopping24DEServiceProvider",
@@ -16,7 +16,7 @@
   "categories": [
     "3880"
   ],
-  "version": "1.0.17",
+  "version": "1.0.18",
   "require": ["ElasticExport"],
   "marketplaceName": {
     "de": "shopping24.de",
