@@ -7,6 +7,7 @@ use ElasticExport\Helper\ElasticExportPriceHelper;
 use ElasticExport\Helper\ElasticExportPropertyHelper;
 use ElasticExport\Helper\ElasticExportStockHelper;
 use ElasticExport\Services\FiltrationService;
+use ElasticExportShopping24DE\Services\AttributeService;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -73,19 +74,26 @@ class Shopping24DE extends CSVPluginGenerator
      * @var FiltrationService
      */
     private $filtrationService;
+    /**
+     * @var AttributeService
+     */
+    private $attributeService;
 
     /**
      * Shopping24DE constructor.
      *
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
+     * @param AttributeService $attributeService
      */
     public function __construct(
         ArrayHelper $arrayHelper,
-        AttributeValueNameRepositoryContract $attributeValueNameRepository)
+        AttributeValueNameRepositoryContract $attributeValueNameRepository, 
+        AttributeService $attributeService)
     {
         $this->arrayHelper                  = $arrayHelper;
         $this->attributeValueNameRepository = $attributeValueNameRepository;
+        $this->attributeService = $attributeService;
     }
 
     /**
@@ -101,6 +109,7 @@ class Shopping24DE extends CSVPluginGenerator
 		$this->elasticExportPropertyHelper = pluginApp(ElasticExportPropertyHelper::class);
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+        $this->attributeService->buildAttributeList($settings);
 		$this->filtrationService = pluginApp(FiltrationService::class, ['settings' => $settings, 'filterSettings' => $filter]);
 
 		$this->setDelimiter(self::DELIMITER); //tab sign
@@ -195,19 +204,20 @@ class Shopping24DE extends CSVPluginGenerator
 	{
 		if(!array_key_exists($variation['data']['item']['id'], $this->rows))
 		{
-			$this->fillLines();
-			$this->rows = array();
-			$this->rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
+            $this->fillLines();
+            $this->rows = array();
+		    
+            $this->rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
 
 			if($variation['data']['attributes']['attributeValueSetId'] > 0)
 			{
-				$this->addAttribute($variation, $settings);
+				$this->addAttribute($variation);
 			}
 		}
 
 		if(array_key_exists($variation['data']['item']['id'],  $this->rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
 		{
-			$this->addAttribute($variation, $settings);
+			$this->addAttribute($variation);
 		}
 	}
 
@@ -277,48 +287,22 @@ class Shopping24DE extends CSVPluginGenerator
 	 * Adds the attributes to the row data.
 	 *
 	 * @param $variation
-	 * @param $settings
 	 */
-    private function addAttribute($variation, $settings)
-	{
-		$variationAttributes = $this->getVariationAttributes($variation, $settings);
-
-		if(array_key_exists('Color', $variationAttributes))
-		{
-			$this->rows[$variation['data']['item']['id']]['color'] = array_merge($this->rows[$variation['data']['item']['id']]['color'], $variationAttributes['Color']);
-		}
-
-		if(array_key_exists('Size', $variationAttributes))
-		{
-			$this->rows[$variation['data']['item']['id']]['clothing_size'] = array_merge($this->rows[$variation['data']['item']['id']]['clothing_size'], $variationAttributes['Size']);
-		}
-	}
-
-    /**
-     * Get variation attributes.
-     *
-     * @param  array   $variation
-     * @param  KeyValue $settings
-     * @return array<string,string>
-     */
-    private function getVariationAttributes(array $variation, KeyValue $settings):array
+    private function addAttribute($variation)
     {
-		$variationAttributes = [];
+        foreach ($variation['data']['attributes'] as $attribute) {
+            if (array_key_exists($attribute['attributeId'], $this->attributeService
+                ->linkedAttributeList[$this->attributeService::AMAZON_ATTRIBUTE_COLOR])) {
+                $this->rows[$variation['data']['item']['id']]['color'][] = $this->attributeService
+                    ->linkedAttributeList[$this->attributeService::AMAZON_ATTRIBUTE_COLOR][$attribute['attributeId']][$attribute['valueId']];
+            }
 
-		foreach($variation['data']['attributes'] as $variationAttribute)
-		{
-			$attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute['valueId'], $settings->get('lang'));
-
-			if($attributeValueName instanceof AttributeValueName)
-			{
-				if($attributeValueName->attributeValue->attribute->amazonAttribute)
-				{
-					$variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
-				}
-			}
-		}
-
-		return $variationAttributes;
+            if (array_key_exists($attribute['attributeId'], $this->attributeService
+                ->linkedAttributeList[$this->attributeService::AMAZON_ATTRIBUTE_SIZE])) {
+                $this->rows[$variation['data']['item']['id']]['clothing_size'][] = $this->attributeService
+                    ->linkedAttributeList[$this->attributeService::AMAZON_ATTRIBUTE_SIZE][$attribute['attributeId']][$attribute['valueId']];
+            }
+        }
     }
 
     /**

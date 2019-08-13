@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.19 (2019-08-13)
+
+### FIX
+- The attributes were not filled with the mapped amazon values.
+
 ## v1.0.18 (2019-05-09)
 
 ### Changed
