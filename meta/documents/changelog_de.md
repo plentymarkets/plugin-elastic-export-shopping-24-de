@@ -1,9 +1,15 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.20 (2019-08-30)
+
+### Geändert
+- Der User Guide wurde aktualisiert.
+- Die Logos wurden aktualisiert.
+
 ## v1.0.19 (2019-08-13)
 
 ### FIX
-- Die Attribute wurden nicht mit den verknüpften Amazonattributen befüllt.
+- Attribute wurden nicht mit den verknüpften Amazon-Attributen befüllt.
 
 ## v1.0.18 (2019-05-09)
 
