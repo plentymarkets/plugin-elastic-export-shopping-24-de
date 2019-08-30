@@ -5,23 +5,23 @@
 
 ## 1 Bei Shopping24.de registrieren
 
-shopping24.de ist eine Tochtergesellschaft der Otto Gruppe und ein Online-Portal für Preis- und Produktvergleiche. Weitere Informationen über shopping24.de finden Sie [hier](https://www.shopping24.de/Info/ueber-uns). 
+shopping24.de ist eine Tochtergesellschaft der Otto Gruppe und ein Online-Portal für Preis- und Produktvergleiche. Weitere Informationen über shopping24.de findest du [hier](https://www.shopping24.de/Info/ueber-uns). 
 
 ## 2 Das Format Shopping24DE-Plugin in plentymarkets einrichten
 
-Mit der Installation dieses Plugins erhalten Sie das Exportformat **Shopping24DE-Plugin**, mit dem Sie Daten über den elastischen Export zu Shopping24.de übertragen. Um dieses Format für den elastischen Export nutzen zu können, installieren Sie zunächst das Plugin **Elastic Export** aus dem plentyMarketplace, wenn noch nicht geschehen. 
+Mit der Installation dieses Plugins erhältst du das Exportformat **Shopping24DE-Plugin**, mit dem du Daten über den elastischen Export zu Shopping24.de überträgst. Um dieses Format für den elastischen Export nutzen zu können, installiere zunächst das Plugin **Elastic Export** aus dem plentyMarketplace, wenn noch nicht geschehen. 
 
-Sobald beide Plugins in Ihrem System installiert sind, kann das Exportformat **Shopping24DE-Plugin** erstellt werden. Weitere Informationen finden Sie auf der Handbuchseite [Elastischer Export](https://knowledge.plentymarkets.com/daten/daten-exportieren/elastischer-export).
+Sobald beide Plugins in deinem System installiert sind, kann das Exportformat **Shopping24DE-Plugin** erstellt werden. Weitere Informationen findest du auf der Handbuchseite [Elastischer Export](https://knowledge.plentymarkets.com/daten/daten-exportieren/elastischer-export).
 
 Neues Exportformat erstellen:
 
-1. Öffnen Sie das Menü **Daten » Elastischer Export**.
-2. Klicken Sie auf **Neuer Export**.
-3. Nehmen Sie die Einstellungen vor. Beachten Sie dazu die Erläuterungen in Tabelle 1.
-4. **Speichern** Sie die Einstellungen.
+1. Öffne das Menü **Daten » Elastischer Export**.
+2. Klicke auf **Neuer Export**.
+3. Nimm die Einstellungen vor. Beachte dazu die Erläuterungen in Tabelle 1.
+4. **Speichere** die Einstellungen.<br/>
 → Eine ID für das Exportformat **Shopping24DE-Plugin** wird vergeben und das Exportformat erscheint in der Übersicht **Exporte**.
 
-In der folgenden Tabelle finden Sie Hinweise zu den einzelnen Formateinstellungen und empfohlenen Artikelfiltern für das Format **Shopping24DE-Plugin**.
+In der folgenden Tabelle findest du Hinweise zu den einzelnen Formateinstellungen und empfohlenen Artikelfiltern für das Format **Shopping24DE-Plugin**.
 
 | **Einstellung**                                     | **Erläuterung** | 
 | :---                                                | :--- |
@@ -65,7 +65,7 @@ _Tab. 1: Einstellungen für das Datenformat **Shopping24DE-Plugin**_
 
 ## 3 Verfügbare Spalten der Exportdatei
 
-Öffnen Sie das Exportformat **Shopping24DE-Plugin** im Menü **Daten » Elastischer Export**, um die Exportdatei herunterzuladen und ggf. anzupassen. 
+Öffne das Exportformat **Shopping24DE-Plugin** im Menü **Daten » Elastischer Export**, um die Exportdatei herunterzuladen und ggf. anzupassen. 
 
 | **Spalte**       | **Erläuterung** | 
 | :---             | :--- |
@@ -93,4 +93,4 @@ _Tab. 2: Spalten der Exportdatei für **Shopping24.de**_
 
 ## 4 Lizenz
 
-Das gesamte Projekt unterliegt der GNU AFFERO GENERAL PUBLIC LICENSE – weitere Informationen finden Sie in der [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-shopping-24-de/blob/master/LICENSE.md).
+Das gesamte Projekt unterliegt der GNU AFFERO GENERAL PUBLIC LICENSE – weitere Informationen findest du in der [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-shopping-24-de/blob/master/LICENSE.md).
