@@ -59,7 +59,7 @@ In der folgenden Tabelle findest du Hinweise zu den einzelnen Formateinstellunge
 | **UVP**                                             | Aktivieren, um den UVP zu übertragen. |
 | **Versandkosten**                                   | Aktivieren, damit die Versandkosten aus der Konfiguration übernommen werden. Wenn die Option aktiviert ist, stehen in den beiden Dropdown-Listen Optionen für die Konfiguration und die Zahlungsart zur Verfügung. Option **Pauschale Versandkosten übertragen** aktivieren, damit die pauschalen Versandkosten übertragen werden. Wenn diese Option aktiviert ist, muss im Feld darunter ein Betrag eingegeben werden. |
 | **MwSt.-Hinweis**                                   | Diese Option ist für dieses Format nicht relevant. |
-| **Artikelverfügbarkeit**                            | Option **überschreiben** aktivieren und in die Felder **1** bis **10**, die die ID der Verfügbarkeit darstellen, Artikelverfügbarkeiten eintragen. Somit werden die Artikelverfügbarkeiten, die im Menü **System » Artikel » Verfügbarkeit** eingestellt wurden, überschrieben. |
+| **Artikelverfügbarkeit**                            | Option **überschreiben** aktivieren und in die Felder **1** bis **10**, die die ID der Verfügbarkeit darstellen, Artikelverfügbarkeiten eintragen. Somit werden die Artikelverfügbarkeiten, die im Menü **Einrichtung » Artikel » Verfügbarkeit** eingestellt wurden, überschrieben. |
        
 _Tab. 1: Einstellungen für das Datenformat **Shopping24DE-Plugin**_
 
@@ -78,7 +78,7 @@ _Tab. 1: Einstellungen für das Datenformat **Shopping24DE-Plugin**_
 | currency         | Der ISO3 **Währungscode** des Preises. |
 | delivery_costs   | Entsprechend der Formateinstellung **Versandkosten**. |
 | category         | Der Name der Kategorie. |
-| brand            | Der **Name des Herstellers** des Artikels. Der **Externe Name** unter **Einstellungen » Artikel » Hersteller** wird bevorzugt, wenn vorhanden. |
+| brand            | Der **Name des Herstellers** des Artikels. Der **Externe Name** unter **Einrichtung » Artikel » Hersteller** wird bevorzugt, wenn vorhanden. |
 | gender_age       | Die **Interessengruppe** des Artikels. |
 | ean              | Entsprechend der Formateinstellung **Barcode**. |
 | keywords         | Die **Keywords** des Artikels. |

@@ -18,9 +18,8 @@ Creating a new export format:
 1. Go to **Data » Elastic export**.
 2. Click on **New export**.
 3. Carry out the settings as desired. Pay attention to the information given in table 1.
-4. **Save** the settings.
-→ The export format will be given an ID and it will appear in the overview within the **Exports** tab.
-
+4. **Save** the settings.<br/>
+→ The export format is given an ID and it appears in the overview within the **Exports** tab.
 
 The following table lists details for settings, format settings and recommended item filters for the format **Shopping24DE-Plugin**.
 
@@ -60,7 +59,7 @@ The following table lists details for settings, format settings and recommended 
 | **RRP**                                               | Activate to transfer the RRP. |
 | **Shipping costs**                                    | Activate this option if you want to use the shipping costs that are saved in a configuration. If this option is activated, then you will be able to select the configuration and the payment method from the drop-down lists.<br/> Activate the option **Transfer flat rate shipping charge** if you want to use a fixed shipping charge. If this option is activated, a value has to be entered in the line underneath. |
 | **VAT Note**                                          | This option does not affect this format. |
-| **Item availability**                                 | Activate the **overwrite** option and enter item availabilities into the fields **1** to **10**. The fields represent the IDs of the availabilities. This will overwrite the item availabilities that are saved in the menu **System » Item » Availability**. |
+| **Item availability**                                 | Activate the **overwrite** option and enter item availabilities into the fields **1** to **10**. The fields represent the IDs of the availabilities. This will overwrite the item availabilities that are saved in the menu **Setup » Item » Availability**. |
        
 _Tab. 1: Settings for the data format **Shopping24DE-Plugin**_       
 
@@ -79,7 +78,7 @@ Go to **Data » Elastic export** and open the data format **Shopping24DE-Plugin*
 | currency         | The ISO3 **currency code** of the price. |
 | delivery_costs   | According to the format setting **shipping costs**. |
 | category         | The name of the **category**. |
-| brand            | The **name of the manufacturer** of the item. The **external name** from the menu **Settings » Items » Manufacturer** will be preferred if existing. |
+| brand            | The **name of the manufacturer** of the item. The **external name** from the menu **Setup » Items » Manufacturer** will be preferred if existing. |
 | gender_age       | The **potential group of buyers** of the item. |
 | ean              | According to the format setting **Barcode**. |
 | keywords         | The **keywords** of the item. |

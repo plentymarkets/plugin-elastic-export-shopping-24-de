@@ -1,8 +1,13 @@
 # Release Notes for Elastic Export Shopping24.de
 
+## v1.0.21 (2019-10-11)
+
+### Changed
+- Old menu paths in the user guide were updated.
+
 ## v1.0.20 (2019-08-30)
 
-### Geändert
+### Changed
 - The user guide was updated.
 - The logos were updated.
 
