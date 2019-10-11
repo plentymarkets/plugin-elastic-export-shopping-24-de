@@ -16,7 +16,7 @@
   "categories": [
     "3880"
   ],
-  "version": "1.0.20",
+  "version": "1.0.21",
   "require": ["ElasticExport"],
   "marketplaceName": {
     "de": "shopping24.de",
