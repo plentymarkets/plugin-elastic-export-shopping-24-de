@@ -2,8 +2,8 @@
 
 namespace ElasticExportShopping24DE\Migrations;
 
-use BasicPriceSearchEngine\Catalog\DataProviders\BaseFieldsDataProvider;
-use BasicPriceSearchEngine\Catalog\Providers\CatalogTemplateProvider;
+use ElasticExportShopping24DE\Catalog\DataProviders\BaseFieldsDataProvider;
+use ElasticExportShopping24DE\Catalog\Providers\CatalogTemplateProvider;
 use Plenty\Exceptions\ValidationException;
 use Plenty\Modules\Catalog\Contracts\CatalogContentRepositoryContract;
 use Plenty\Modules\Catalog\Contracts\CatalogRepositoryContract;
@@ -127,8 +127,8 @@ class CatalogMigration
     private function registerTemplate()
     {
         return $this->templateContainer->register(
-            'BasicPriceSearchEngine',
-            'BasicPriceSearchEngine',
+            'ElasticExportShopping24DE',
+            'ElasticExportShopping24DE',
             CatalogTemplateProvider::class
         );
     }
