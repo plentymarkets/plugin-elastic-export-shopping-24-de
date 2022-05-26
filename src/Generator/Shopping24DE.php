@@ -133,7 +133,7 @@ class Shopping24DE extends CSVPluginGenerator
 						'error message ' => $resultList['error'],
 					]);
 				}
-				if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
+				if(is_array($resultList['documents']) && count($resultList['documents'] ?? []) > 0)
 				{
 					foreach($resultList['documents'] as $variation)
 					{
@@ -362,7 +362,7 @@ class Shopping24DE extends CSVPluginGenerator
     {
         $image = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, ElasticExportCoreHelper::ITEM_IMAGES);
 
-        if(count($image) > 0)
+        if(count($image ?? []) > 0)
         {
             // return first image
             return $image[0];

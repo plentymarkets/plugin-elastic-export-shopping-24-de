@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.23 (2022-05-26)
+
+### Geändert
+- UPDATE - Zusätzliche Updates für Kompatibilität mit PHP 8.
+
 ## v1.0.22 (2020-06-24)
 
 ### Geändert
