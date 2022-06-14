@@ -2,7 +2,13 @@
 # User Guide für das Elastic Export Shopping24.de Plugin
 
 <div class="alert alert-info" role="alert">
-  Wie du das Plugin für das Exportformat Shopping24.de in plentymarkets einrichtest, <a href="https://knowledge.plentymarkets.com/maerkte/preisportale/shopping24" target="_blank">ist im Handbuch beschrieben</a>.
+Katalogexport jetzt für Shopping24 verfügbar
+ 
+Artikeldaten können jetzt per Katalogexport an Shopping24 übertragen werden. Dafür wird kein Plugin mehr benötigt. Du kannst den <a href="https://knowledge.plentymarkets.com/de-de/manual/main/maerkte/shopping24.html#catalogue-export" target="_blank">Katalog also direkt in deinem plentymarkets System erstellen</a>, ohne dieses Plugin installieren zu müssen.
+ 
+Dieses Plugin verwendet den Elastischen Export. Deshalb benötigst du zusätzlich zu diesem Plugin außerdem das Plugin **Elastischer Export**. Beachte aber, dass der Elastische Export und die Exportformate nicht mehr weiterentwickelt werden. Wir empfehlen dir deshalb, für den Artikeldatenexport Kataloge zu erstellen.
+ 
+Beide Möglichkeiten, Shopping24 in plentymarkets einzurichten, <a href="https://knowledge.plentymarkets.com/de-de/manual/main/maerkte/shopping24.html" target="_blank">sind im plentymarkets Handbuch beschrieben</a>.
 </div>
 
 ## Lizenz

@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export Shopping24.de
 
+## v1.0.24 (2022-06-14)
+
+### Geändert
+- Der User Guide des Plugins wurde aktualisiert.
+
 ## v1.0.23 (2022-05-26)
 
 ### Geändert
